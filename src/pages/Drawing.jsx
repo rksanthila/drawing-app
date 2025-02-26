@@ -37,9 +37,9 @@ const DrawingTool = () => {
     const ctx = canvas.getContext("2d");
     // Set initial canvas size
     const setCanvasSize = () => {
-      const parent = canvas.parentElement;
-      canvas.width = parent.clientWidth; // Set canvas width to parent width
-      canvas.height = parent.clientHeight * 0.9; // Set canvas height to 80% of parent height
+      // const parent = canvas.parentElement;
+      canvas.width = window.innerWidth / 1.5; // Set canvas width to parent width
+      canvas.height = window.innerHeight / 1.3; // Set canvas height to 80% of parent height
     };
     setCanvasSize();
     window.addEventListener("resize", setCanvasSize); // Update canvas size on window resize
@@ -53,14 +53,19 @@ const DrawingTool = () => {
     setHistory((prev) => [...prev, imageData]);
     // setFuture([]); // Clear redo history after a new action
   };
+  console.log('history',history);
   const undo = () => {
-    console.log('history',history);
-    if (history.length > 1) {
+    if (history.length > 0) {
       const lastState = history[history.length - 2]; // Get the previous state
       setFuture((prev) => [...prev, history[history.length - 1]]); // Move current state to redo
       setHistory((prev) => prev.slice(0, -1));
       SetRedoSteps(false);
-      context.putImageData(lastState, 0, 0); // Restore the previous state
+      if(lastState){
+        context.putImageData(lastState, 0, 0); // Restore the previous state
+      }
+      else{
+        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
     }
     else{
         context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -69,13 +74,14 @@ const DrawingTool = () => {
   };
 
   // Redo the last undone action
+  console.log('future',future)
   const redo = () => {
-    console.log('future',future)
     if (future.length !== 0) {
       const nextState = future[future.length - 1]; // Get the next state
       setHistory((prev) => [...prev, nextState]); // Move next state to history
-      setFuture((prev) => prev.slice(0, -1)); // Remove the next state from redo
+      setFuture((prev) => prev.slice(0, -1));
       context.putImageData(nextState, 0, 0); // Restore the next state
+      if(future.length === 1) return SetRedoSteps(true);
     } else {
       SetRedoSteps(true);
     }
@@ -108,8 +114,9 @@ const DrawingTool = () => {
   // Clear the canvas
   const clearCanvas = () => {
     context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    setShapes([]);
-    saveCanvasState();
+    setFuture([]);
+    setHistory([]);
+    SetRedoSteps(true);
   };
   const handleTool = (tool) => {
     setSelectedTool(tool?.id);
