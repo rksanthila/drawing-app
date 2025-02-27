@@ -29,8 +29,8 @@ const DrawingTool = () => {
   const [color, setColor] = useState("#000000");
   // const [shapes, setShapes] = useState([]);
   //   const [selectedShape, setSelectedShape] = useState(null);
-//   const [startX, setStartX] = useState(0); // Start X for drawing shapes
-//   const [startY, setStartY] = useState(0);
+  //   const [startX, setStartX] = useState(0); // Start X for drawing shapes
+  //   const [startY, setStartY] = useState(0);
   // Initialize the canvas context
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -53,35 +53,43 @@ const DrawingTool = () => {
     setHistory((prev) => [...prev, imageData]);
     // setFuture([]); // Clear redo history after a new action
   };
-  console.log('history',history);
+  console.log("history", history);
   const undo = () => {
     if (history.length > 0) {
       const lastState = history[history.length - 2]; // Get the previous state
       setFuture((prev) => [...prev, history[history.length - 1]]); // Move current state to redo
       setHistory((prev) => prev.slice(0, -1));
       SetRedoSteps(false);
-      if(lastState){
+      if (lastState) {
         context.putImageData(lastState, 0, 0); // Restore the previous state
+      } else {
+        context.clearRect(
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
       }
-      else{
-        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      }
-    }
-    else{
-        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        setHistory([]);
+    } else {
+      context.clearRect(
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height
+      );
+      setHistory([]);
     }
   };
 
   // Redo the last undone action
-  console.log('future',future)
+  console.log("future", future);
   const redo = () => {
     if (future.length !== 0) {
       const nextState = future[future.length - 1]; // Get the next state
       setHistory((prev) => [...prev, nextState]); // Move next state to history
       setFuture((prev) => prev.slice(0, -1));
       context.putImageData(nextState, 0, 0); // Restore the next state
-      if(future.length === 1) return SetRedoSteps(true);
+      if (future.length === 1) return SetRedoSteps(true);
     } else {
       SetRedoSteps(true);
     }
@@ -129,30 +137,42 @@ const DrawingTool = () => {
     const circleRadius = 50; // Circle radius
 
     if (context) {
-        context.lineWidth = 3;
-        context.strokeStyle = tool?.id === "eraser" ? "#FFFFFF" : color;
-        if (tool?.id === "rectangle") {
-            context.strokeRect(x - shapeWidth / 2, y - shapeHeight / 2, shapeWidth, shapeHeight);
-            saveCanvasState();
-        } else if (tool?.id === "square") {
-            context.strokeRect(x - shapeSize / 2, y - shapeSize / 2, shapeSize, shapeSize);
-            saveCanvasState();
-        } else if (tool?.id === "circle") {
-            context.beginPath();
-            context.arc(x, y, circleRadius, 0, Math.PI * 2);
-            context.stroke();
-            saveCanvasState();
-        }
+      context.lineWidth = 3;
+      context.strokeStyle = tool?.id === "eraser" ? "#FFFFFF" : color;
+      if (tool?.id === "rectangle") {
+        context.strokeRect(
+          x - shapeWidth / 2,
+          y - shapeHeight / 2,
+          shapeWidth,
+          shapeHeight
+        );
+        saveCanvasState();
+      } else if (tool?.id === "square") {
+        context.strokeRect(
+          x - shapeSize / 2,
+          y - shapeSize / 2,
+          shapeSize,
+          shapeSize
+        );
+        saveCanvasState();
+      } else if (tool?.id === "circle") {
+        context.beginPath();
+        context.arc(x, y, circleRadius, 0, Math.PI * 2);
+        context.stroke();
+        saveCanvasState();
+      }
     }
   };
-const download = () => {
+
+  const download = () => {
     var canvas = document.getElementById("canvas");
     var url = canvas.toDataURL("image/png");
-    var link = document.createElement('a');
-    link.download = 'mydrawing.png';
+    var link = document.createElement("a");
+    link.download = "mydrawing.png";
     link.href = url;
     link.click();
-  }
+  };
+  
   return (
     <>
       <div
@@ -194,7 +214,7 @@ const download = () => {
           ))}
         <Tooltip placement="rightTop" title={"Color"}>
           <input
-          style={{marginTop:'10px'}}
+            style={{ marginTop: "10px" }}
             type="color"
             value={color}
             onChange={(e) => setColor(e.target.value)}
