@@ -12,9 +12,9 @@ const tools = [
   { id: "pen", icon: <FaPenFancy />, title: "Pen", lineWidth: 3 },
   { id: "marker", icon: <LiaMarkerSolid />, title: "Marker", lineWidth: 5 },
   { id: "eraser", icon: <BsEraser />, title: "Eraser" },
-  { id: "rectangle", icon: <LuRectangleHorizontal />, title: "Rectangle" },
-  { id: "square", icon: <BiSquareRounded />, title: "Square" },
-  { id: "circle", icon: <FaRegCircle />, title: "Circle" },
+  // { id: "rectangle", icon: <LuRectangleHorizontal />, title: "Rectangle" },
+  // { id: "square", icon: <BiSquareRounded />, title: "Square" },
+  // { id: "circle", icon: <FaRegCircle />, title: "Circle" },
 ];
 
 const DrawingTool = () => {
@@ -27,7 +27,7 @@ const DrawingTool = () => {
   const [selectedTool, setSelectedTool] = useState("pencil");
   const [lineWidth, setLineWidth] = useState(1);
   const [color, setColor] = useState("#000000");
-  const [shapes, setShapes] = useState([]);
+  // const [shapes, setShapes] = useState([]);
   //   const [selectedShape, setSelectedShape] = useState(null);
 //   const [startX, setStartX] = useState(0); // Start X for drawing shapes
 //   const [startY, setStartY] = useState(0);
@@ -145,6 +145,14 @@ const DrawingTool = () => {
         }
     }
   };
+const download = () => {
+    var canvas = document.getElementById("canvas");
+    var url = canvas.toDataURL("image/png");
+    var link = document.createElement('a');
+    link.download = 'mydrawing.png';
+    link.href = url;
+    link.click();
+  }
   return (
     <>
       <div
@@ -208,24 +216,24 @@ const DrawingTool = () => {
           }}
         >
           <div>
-            <button onClick={clearCanvas} style={{ marginTop: "10px" }}>
+            <button onClick={clearCanvas} style={{ margin: "0px 10px" }}>
               Clear
             </button>
             <button
               onClick={undo}
               disabled={history.length === 0}
-              style={{ marginTop: "10px" }}
+              style={{ margin: "0px 10px" }}
             >
               <GrUndo />
             </button>
             <button
               onClick={redo}
               disabled={redosteps}
-              style={{ marginTop: "10px" }}
+              style={{ margin: "0px 10px" }}
             >
               <GrRedo />
             </button>
-            <button onClick={clearCanvas} style={{ marginTop: "10px" }}>
+            <button onClick={download} style={{ margin: "0px 10px" }}>
               Download
             </button>
           </div>
